@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public class Cancha {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "nombre_cancha", nullable = false, length = 150)
     private String nombreCancha;
@@ -42,7 +42,7 @@ public class Cancha {
     }
 
 
-    public Cancha(Integer id, String nombreCancha, String ubicacion, String descripcion, BigDecimal precioPorHora, String tipo, BigDecimal rating, Integer totalResenas, String imagenUrl, Boolean disponible) {
+    public Cancha(Long id, String nombreCancha, String ubicacion, String descripcion, BigDecimal precioPorHora, String tipo, BigDecimal rating, Integer totalResenas, String imagenUrl, Boolean disponible) {
         this.id = id;
         this.nombreCancha = nombreCancha;
         this.ubicacion = ubicacion;
@@ -57,11 +57,11 @@ public class Cancha {
 
 
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
