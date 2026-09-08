@@ -28,7 +28,7 @@ public class Servicio {
     @Column(nullable = false)
     private String icono;
 
-    @ManyToMany(mappedBy = "servicios")
+    @OneToMany(mappedBy = "servicio")
     @JsonIgnore
-    private Set<Cancha> canchas = new HashSet<>();
+    private Set<CanchaServicio> canchas = new HashSet<>();
 }
