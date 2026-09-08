@@ -1,48 +1,28 @@
-package com.generation.grupo10.model;
+package com.generation.grupo10.dto;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "canchas")
-public class Cancha {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CanchaDTO {
+
     private Long id;
-
-    @Column(name = "nombre_cancha", nullable = false, length = 150)
     private String nombreCancha;
-
-    @Column(nullable = false, length = 255)
     private String ubicacion;
-
-    @Column(columnDefinition = "TEXT")
     private String descripcion;
-
-    @Column(name = "precio_por_hora", nullable = false, precision = 12, scale = 2)
     private BigDecimal precioPorHora;
-
-    @Column(nullable = false, length = 50)
     private String tipo;
-
-    @Column(precision = 2, scale = 1)
     private BigDecimal rating;
-
-    @Column(name = "total_resenas")
     private Integer totalResenas;
-
-    @Column(name = "imagen_url")
     private String imagenUrl;
-
     private Boolean disponible;
 
-
-
-    public Cancha() {    //constructor
+    public CanchaDTO() {
     }
 
+    public CanchaDTO(Long id, String nombreCancha, String ubicacion,
+                     String descripcion, BigDecimal precioPorHora,
+                     String tipo, BigDecimal rating, Integer totalResenas,
+                     String imagenUrl, Boolean disponible) {
 
-    public Cancha(Long id, String nombreCancha, String ubicacion, String descripcion, BigDecimal precioPorHora, String tipo, BigDecimal rating, Integer totalResenas, String imagenUrl, Boolean disponible) {
         this.id = id;
         this.nombreCancha = nombreCancha;
         this.ubicacion = ubicacion;
@@ -54,8 +34,6 @@ public class Cancha {
         this.imagenUrl = imagenUrl;
         this.disponible = disponible;
     }
-
-
 
     public Long getId() {
         return id;
@@ -135,14 +113,5 @@ public class Cancha {
 
     public void setDisponible(Boolean disponible) {
         this.disponible = disponible;
-    }
-
-
-    public String getNombre() {
-        return nombreCancha;
-    }
-
-    public Double getPrecioHora() {
-        return precioPorHora != null ? precioPorHora.doubleValue() : null;
     }
 }
