@@ -6,8 +6,52 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
-    public Usuario() {
+    @Id
+    private Long id;
+
+    @Column(nullable = false, length = 100)
+    private String nombre;
+
+    @Column(nullable = false, length = 100)
+    private String apellido;
+
+    @Column(nullable = false, unique = true, length = 150)
+    private String email;
+
+    @Column(nullable = false, length = 20)
+    private String telefono;
+
+    @Column(nullable = false, length = 255)
+    private String password;
+
+    @Column(name = "foto_perfil")
+    private String fotoPerfil;
+
+    @Column(length = 20)
+    private String rol;
+
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
+
+
+
+    public Usuario() {  //constructor vacio
     }
+
+
+    public Usuario(Long id, String nombre, String apellido, String email, String telefono, String password, String fotoPerfil, String rol, LocalDateTime fechaCreacion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.email = email;
+        this.telefono = telefono;
+        this.password = password;
+        this.fotoPerfil = fotoPerfil;
+        this.rol = rol;
+        this.fechaCreacion = fechaCreacion;
+    }
+
+
 
     public Long getId() {
         return id;
@@ -81,30 +125,5 @@ public class Usuario {
         this.fechaCreacion = fechaCreacion;
     }
 
-    @Id
-    private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String nombre;
-
-    @Column(nullable = false, length = 100)
-    private String apellido;
-
-    @Column(nullable = false, unique = true, length = 150)
-    private String email;
-
-    @Column(nullable = false, length = 20)
-    private String telefono;
-
-    @Column(nullable = false, length = 255)
-    private String password;
-
-    @Column(name = "foto_perfil")
-    private String fotoPerfil;
-
-    @Column(length = 20)
-    private String rol;
-
-    @Column(name = "fecha_creacion")
-    private LocalDateTime fechaCreacion;
 }
