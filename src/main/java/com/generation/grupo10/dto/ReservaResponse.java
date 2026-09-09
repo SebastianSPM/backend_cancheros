@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -35,7 +36,7 @@ public class ReservaResponse {
 
     private Integer duracion;
 
-    private Double total;
+    private BigDecimal total;
 
     private EstadoReserva estado;
 }

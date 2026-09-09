@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -47,8 +48,8 @@ public class Reserva {
     private Integer duracion;
 
     // Valor total calculado por backend
-    @Column(nullable = false)
-    private Double total;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal total;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
