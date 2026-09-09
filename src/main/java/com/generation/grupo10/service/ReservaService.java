@@ -1,15 +1,15 @@
 package com.generation.grupo10.service;
 
-
-
 import com.generation.grupo10.dto.ReservaRequest;
 import com.generation.grupo10.dto.ReservaResponse;
 import com.generation.grupo10.exception.ResourceNotFoundException;
 import com.generation.grupo10.model.Cancha;
 import com.generation.grupo10.model.EstadoReserva;
 import com.generation.grupo10.model.Reserva;
+import com.generation.grupo10.model.Usuario;
 import com.generation.grupo10.repository.CanchaRepository;
 import com.generation.grupo10.repository.ReservaRepository;
+import com.generation.grupo10.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,11 +24,19 @@ public class ReservaService {
 
     private final ReservaRepository reservaRepository;
     private final CanchaRepository canchaRepository;
-
+    private final UsuarioRepository usuarioRepository;
 
     public ReservaResponse crearReserva(ReservaRequest request) {
 
-        // 1. Buscar cancha
+        // 1. Buscar usuario
+        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Usuario no encontrado"
+                        )
+                );
+
+        // 2. Buscar cancha
         Cancha cancha = canchaRepository.findById(request.getCanchaId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
@@ -36,8 +44,7 @@ public class ReservaService {
                         )
                 );
 
-
-        // 2. Validar duración
+        // 3. Validar duración
         if (request.getDuracion() == null ||
                 request.getDuracion() < 1 ||
                 request.getDuracion() > 3) {
@@ -47,8 +54,7 @@ public class ReservaService {
             );
         }
 
-
-        // 3. Validar fecha
+        // 4. Validar fecha
         if (request.getFecha().isBefore(LocalDate.now())) {
 
             throw new IllegalArgumentException(
@@ -56,13 +62,11 @@ public class ReservaService {
             );
         }
 
-
-        // 4. Calcular hora final
+        // 5. Calcular hora final
         LocalTime horaFin = request.getHoraInicio()
                 .plusHours(request.getDuracion());
 
-
-        // 5. Verificar disponibilidad
+        // 6. Verificar disponibilidad
         validarDisponibilidad(
                 cancha.getId(),
                 request.getFecha(),
@@ -70,50 +74,31 @@ public class ReservaService {
                 horaFin
         );
 
-
-        // 6. Calcular total
+        // 7. Calcular total
         Double total =
                 cancha.getPrecioHora() * request.getDuracion();
 
-
-        // 7. Crear reserva
+        // 8. Crear reserva
         Reserva reserva = new Reserva();
 
+        reserva.setUsuario(usuario);
         reserva.setCancha(cancha);
-        reserva.setNombreCompleto(
-                request.getNombreCompleto()
-        );
-        reserva.setCorreo(
-                request.getCorreo()
-        );
-        reserva.setTelefono(
-                request.getTelefono()
-        );
-        reserva.setFecha(
-                request.getFecha()
-        );
-        reserva.setHoraInicio(
-                request.getHoraInicio()
-        );
-        reserva.setDuracion(
-                request.getDuracion()
-        );
+        reserva.setFecha(request.getFecha());
+        reserva.setHoraInicio(request.getHoraInicio());
+        reserva.setDuracion(request.getDuracion());
+
+        reserva.setPrecioHora(cancha.getPrecioPorHora());
+
         reserva.setTotal(total);
+        reserva.setEstado(EstadoReserva.CONFIRMADA);
 
-        reserva.setEstado(
-                EstadoReserva.CONFIRMADA
-        );
-
-
-        // 8. Guardar
+        // 9. Guardar
         Reserva reservaGuardada =
                 reservaRepository.save(reserva);
 
-
-        // 9. Convertir a Response
+        // 10. Convertir a Response
         return convertirResponse(reservaGuardada);
     }
-
 
     private void validarDisponibilidad(
             Long canchaId,
@@ -127,7 +112,6 @@ public class ReservaService {
                         fecha
                 );
 
-
         for (Reserva reserva : reservas) {
 
             if (reserva.getEstado() ==
@@ -135,7 +119,6 @@ public class ReservaService {
 
                 continue;
             }
-
 
             LocalTime reservaInicio =
                     reserva.getHoraInicio();
@@ -145,12 +128,10 @@ public class ReservaService {
                             reserva.getDuracion()
                     );
 
-
             boolean existeConflicto =
                     horaInicio.isBefore(reservaFin)
                             &&
                             horaFin.isAfter(reservaInicio);
-
 
             if (existeConflicto) {
 
@@ -161,7 +142,6 @@ public class ReservaService {
         }
     }
 
-
     private ReservaResponse convertirResponse(
             Reserva reserva) {
 
@@ -171,20 +151,26 @@ public class ReservaService {
                                 reserva.getDuracion()
                         );
 
+        String nombreCompleto =
+                reserva.getUsuario().getNombre()
+                        + " "
+                        + reserva.getUsuario().getApellido();
 
         return new ReservaResponse(
 
                 reserva.getId(),
 
+                reserva.getUsuario().getId(),
+
                 reserva.getCancha().getId(),
 
                 reserva.getCancha().getNombre(),
 
-                reserva.getNombreCompleto(),
+                nombreCompleto,
 
-                reserva.getCorreo(),
+                reserva.getUsuario().getEmail(),
 
-                reserva.getTelefono(),
+                reserva.getUsuario().getTelefono(),
 
                 reserva.getFecha(),
 

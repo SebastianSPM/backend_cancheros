@@ -1,12 +1,11 @@
 package com.generation.grupo10.model;
 
-
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -21,15 +20,10 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Datos del cliente
-    @Column(nullable = false)
-    private String nombreCompleto;
-
-    @Column(nullable = false)
-    private String correo;
-
-    @Column(nullable = false)
-    private String telefono;
+    // Usuario que realiza la reserva
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     // Cancha reservada
     @ManyToOne
@@ -40,10 +34,13 @@ public class Reserva {
     @Column(nullable = false)
     private LocalDate fecha;
 
-    @Column(nullable = false)
+    @Column(name = "precio_hora", nullable = false)
+    private BigDecimal precioHora;
+
+    @Column(name = "hora_inicio", nullable = false)
     private LocalTime horaInicio;
 
-    @Column(nullable = false)
+    @Column(name = "duracion_horas", nullable = false)
     private Integer duracion;
 
     // Valor total calculado por backend

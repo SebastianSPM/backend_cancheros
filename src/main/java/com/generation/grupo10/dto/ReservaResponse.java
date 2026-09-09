@@ -1,7 +1,5 @@
 package com.generation.grupo10.dto;
 
-
-
 import com.generation.grupo10.model.EstadoReserva;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +14,8 @@ import java.time.LocalTime;
 public class ReservaResponse {
 
     private Long id;
+
+    private Long usuarioId;
 
     private Long canchaId;
 

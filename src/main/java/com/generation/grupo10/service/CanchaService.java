@@ -3,7 +3,11 @@ package com.generation.grupo10.service;
 
 import com.generation.grupo10.dto.CanchaDTO;
 import com.generation.grupo10.model.Cancha;
+import com.generation.grupo10.model.CanchaServicio;
+import com.generation.grupo10.model.Servicio;
 import com.generation.grupo10.repository.CanchaRepository;
+import com.generation.grupo10.repository.CanchaServicioRepository;
+import com.generation.grupo10.repository.ServicioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,8 @@ import java.util.List;
 public class CanchaService {
 
     private final CanchaRepository canchaRepository;
+    private final ServicioRepository servicioRepository;
+    private final CanchaServicioRepository canchaServicioRepository;
 
     public List<CanchaDTO> obtenerTodas() {
 
@@ -99,5 +105,23 @@ public class CanchaService {
                 cancha.getImagenUrl(),
                 cancha.getDisponible()
         );
+    }
+
+    public void asignarServicio(Long canchaId, Long servicioId) {
+
+        Cancha cancha = canchaRepository.findById(canchaId)
+                .orElseThrow(() ->
+                        new RuntimeException("Cancha no encontrada")
+                );
+
+        Servicio servicio = servicioRepository.findById(servicioId)
+                .orElseThrow(() ->
+                        new RuntimeException("Servicio no encontrado")
+                );
+
+        CanchaServicio canchaServicio =
+                new CanchaServicio(cancha, servicio);
+
+        canchaServicioRepository.save(canchaServicio);
     }
 }
