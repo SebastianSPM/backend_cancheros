@@ -21,6 +21,6 @@ public class Contactos {
     private String telefono;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String mensaje;
-    @Column(name = "fecha_envio", insertable = false, updatable = false)
+    @Column(name = "fecha_envio")
     private LocalDateTime fechaEnvio;
 }

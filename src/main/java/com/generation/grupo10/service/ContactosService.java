@@ -1,10 +1,5 @@
 package com.generation.grupo10.service;
 
-
-
-
-
-
 import com.generation.grupo10.dto.ContactoRequest;
 import com.generation.grupo10.dto.ContactoResponse;
 import com.generation.grupo10.model.Contactos;
@@ -12,6 +7,7 @@ import com.generation.grupo10.repository.ContactosRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -37,6 +33,8 @@ public class ContactosService {
         contacto.setTelefono(request.getTelefono());
         contacto.setMensaje(request.getMensaje());
 
+        contacto.setFechaEnvio(LocalDateTime.now());
+
         Contactos contactoGuardado = contactosRepository.save(contacto);
 
         return convertirAResponse(contactoGuardado);
@@ -52,5 +50,9 @@ public class ContactosService {
                 contacto.getMensaje(),
                 contacto.getFechaEnvio()
         );
+    }
+
+    public void eliminarContacto(Integer id) {
+        contactosRepository.deleteById(id);
     }
 }

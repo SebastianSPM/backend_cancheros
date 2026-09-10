@@ -34,6 +34,16 @@ public class CanchaController {
         );
     }
 
+    @PostMapping("/{canchaId}/servicios/{servicioId}")
+    public ResponseEntity<Void> asignarServicio(
+            @PathVariable Long canchaId,
+            @PathVariable Long servicioId) {
+
+        canchaService.asignarServicio(canchaId, servicioId);
+
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping
     public ResponseEntity<CanchaDTO> guardar(
             @RequestBody CanchaDTO dto) {

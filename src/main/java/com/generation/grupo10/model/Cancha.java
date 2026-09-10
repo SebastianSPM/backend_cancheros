@@ -43,4 +43,12 @@ public class Cancha {
     private String imagenUrl;
 
     private Boolean disponible;
+
+    public Double getPrecioHora() {
+        return precioPorHora.doubleValue();
+    }
+
+    public String getNombre() {
+        return nombreCancha;
+    }
 }

@@ -10,7 +10,6 @@ import com.generation.grupo10.model.EstadoReserva;
 import com.generation.grupo10.model.Reserva;
 import com.generation.grupo10.repository.CanchaRepository;
 import com.generation.grupo10.repository.ReservaRepository;
-import java.math.BigDecimal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -73,8 +72,8 @@ public class ReservaService {
 
 
         // 6. Calcular total
-        BigDecimal total = cancha.getPrecioPorHora()
-                .multiply(BigDecimal.valueOf(request.getDuracion()));
+        Double total =
+                cancha.getPrecioHora() * request.getDuracion();
 
 
         // 7. Crear reserva
@@ -179,7 +178,7 @@ public class ReservaService {
 
                 reserva.getCancha().getId(),
 
-                reserva.getCancha().getNombreCancha(),
+                reserva.getCancha().getNombre(),
 
                 reserva.getNombreCompleto(),
 

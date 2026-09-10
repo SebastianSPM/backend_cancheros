@@ -12,13 +12,9 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class ReservaRequest {
 
+    private Long usuarioId;
+
     private Long canchaId;
-
-    private String nombreCompleto;
-
-    private String correo;
-
-    private String telefono;
 
     private LocalDate fecha;
 

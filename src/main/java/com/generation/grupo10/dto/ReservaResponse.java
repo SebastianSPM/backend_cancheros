@@ -1,7 +1,5 @@
 package com.generation.grupo10.dto;
 
-
-
 import com.generation.grupo10.model.EstadoReserva;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +15,8 @@ import java.math.BigDecimal;
 public class ReservaResponse {
 
     private Long id;
+
+    private Long usuarioId;
 
     private Long canchaId;
 
