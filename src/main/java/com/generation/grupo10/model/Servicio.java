@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -29,6 +30,5 @@ public class Servicio {
     private String icono;
 
     @OneToMany(mappedBy = "servicio")
-    @JsonIgnore
-    private Set<CanchaServicio> canchas = new HashSet<>();
+    private List<CanchaServicio> canchaServicios;
 }
