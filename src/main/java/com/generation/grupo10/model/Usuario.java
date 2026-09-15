@@ -46,14 +46,4 @@ public class Usuario {
 
     @Column(name = "correo_verificado", nullable = false)
     private boolean correoVerificado;
-
-    // ==========================================
-    // RECUPERACIÓN DE CONTRASEÑA
-    // ==========================================
-
-    @Column(name = "codigo_recuperacion", length = 6)
-    private String codigoRecuperacion;
-
-    @Column(name = "codigo_recuperacion_expiracion")
-    private LocalDateTime codigoRecuperacionExpiracion;
 }
