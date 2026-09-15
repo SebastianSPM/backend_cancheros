@@ -38,10 +38,10 @@ public class ReservaService {
     // =========================================================
 
     public ReservaResponse crearReserva(
-            Long usuarioId,
+            String email,
             ReservaRequest request) {
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Usuario no encontrado"
@@ -95,11 +95,18 @@ public class ReservaService {
 
     @Transactional(readOnly = true)
     public List<ReservaResumen> obtenerMisReservas(
-            Long usuarioId) {
+            String email) {
+
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Usuario no encontrado"
+                        )
+                );
 
         return reservaRepository
                 .findByUsuarioIdOrderByFechaDescHoraInicioDesc(
-                        usuarioId
+                        usuario.getId()
                 )
                 .stream()
                 .map(this::convertirResumen)
@@ -114,11 +121,11 @@ public class ReservaService {
     @Transactional(readOnly = true)
     public ReservaResponse obtenerPorId(
             Long reservaId,
-            Long usuarioId) {
+            String email) {
 
         Reserva reserva = buscarReserva(reservaId);
 
-        validarPropietario(reserva, usuarioId);
+        validarPropietario(reserva, email);
 
         return convertirResponse(reserva);
     }
@@ -130,7 +137,7 @@ public class ReservaService {
 
     public ReservaResponse actualizarReserva(
             Long reservaId,
-            Long usuarioId,
+            String email,
             ReservaRequest request) {
 
         Reserva reserva =
@@ -138,7 +145,7 @@ public class ReservaService {
 
         validarPropietario(
                 reserva,
-                usuarioId
+                email
         );
 
         if (reserva.getEstado() ==
@@ -194,14 +201,14 @@ public class ReservaService {
 
     public void cancelarReserva(
             Long reservaId,
-            Long usuarioId) {
+            String email) {
 
         Reserva reserva =
                 buscarReserva(reservaId);
 
         validarPropietario(
                 reserva,
-                usuarioId
+                email
         );
 
         if (reserva.getEstado() ==
@@ -494,11 +501,11 @@ public class ReservaService {
 
     private void validarPropietario(
             Reserva reserva,
-            Long usuarioId) {
+            String email) {
 
         if (!reserva.getUsuario()
-                .getId()
-                .equals(usuarioId)) {
+                .getEmail()
+                .equals(email)) {
 
             throw new IllegalArgumentException(
                     "No tienes permiso para modificar esta reserva"

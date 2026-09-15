@@ -43,4 +43,7 @@ public class Usuario {
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
+
+    @Column(name = "correo_verificado", nullable = false)
+    private boolean correoVerificado;
 }
