@@ -1,5 +1,6 @@
 package com.generation.grupo10.controller;
 
+import com.generation.grupo10.dto.UsuarioDTO;
 import com.generation.grupo10.model.Usuario;
 import com.generation.grupo10.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -18,14 +19,41 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public List<Usuario> listarUsuarios() {
-        return usuarioService.listarUsuarios();
+    public List<UsuarioDTO> listarUsuarios() {
+        return usuarioService.listarUsuarios()
+                .stream()
+                .map(usuario -> new UsuarioDTO(
+                        usuario.getId(),
+                        usuario.getNombre(),
+                        usuario.getApellido(),
+                        usuario.getEmail(),
+                        usuario.getTelefono(),
+                        usuario.getFotoPerfil(),
+                        usuario.getRol(),
+                        usuario.getFechaCreacion()
+                ))
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
+
         return usuarioService.buscarPorId(id)
-                .map(ResponseEntity::ok)
+                .map(usuario -> {
+
+                    UsuarioDTO dto = new UsuarioDTO(
+                            usuario.getId(),
+                            usuario.getNombre(),
+                            usuario.getApellido(),
+                            usuario.getEmail(),
+                            usuario.getTelefono(),
+                            usuario.getFotoPerfil(),
+                            usuario.getRol(),
+                            usuario.getFechaCreacion()
+                    );
+
+                    return ResponseEntity.ok(dto);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 
