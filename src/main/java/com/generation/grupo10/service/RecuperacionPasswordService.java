@@ -1,0 +1,101 @@
+package com.generation.grupo10.service;
+
+import com.generation.grupo10.model.TokenRecuperacion;
+import com.generation.grupo10.repository.TokenRecuperacionRepository;
+import com.generation.grupo10.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class RecuperacionPasswordService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final TokenRecuperacionRepository tokenRepository;
+    private final EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public void solicitarRecuperacion(String email) {
+
+        usuarioRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "No existe un usuario con ese email"
+                        )
+                );
+
+        String token = UUID.randomUUID().toString();
+
+        TokenRecuperacion tokenRecuperacion =
+                new TokenRecuperacion();
+
+        tokenRecuperacion.setEmail(email);
+        tokenRecuperacion.setToken(token);
+
+        tokenRecuperacion.setFechaExpiracion(
+                LocalDateTime.now().plusMinutes(15)
+        );
+
+        tokenRecuperacion.setUsado(false);
+
+        tokenRepository.save(tokenRecuperacion);
+
+        String enlace =
+                "http://localhost:3000/reset-password?token="
+                        + token;
+
+        emailService.enviarEnlaceRecuperacion(
+                email,
+                enlace
+        );
+    }
+
+    public void cambiarPassword(
+            String token,
+            String nuevaPassword) {
+
+        TokenRecuperacion tokenRecuperacion =
+                tokenRepository
+                        .findByTokenAndUsadoFalse(token)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Token inválido o ya utilizado"
+                                )
+                        );
+
+        if (tokenRecuperacion
+                .getFechaExpiracion()
+                .isBefore(LocalDateTime.now())) {
+
+            throw new IllegalArgumentException(
+                    "El enlace ha expirado"
+            );
+        }
+
+        var usuario =
+                usuarioRepository
+                        .findByEmail(
+                                tokenRecuperacion.getEmail()
+                        )
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Usuario no encontrado"
+                                )
+                        );
+
+        usuario.setPassword(
+                passwordEncoder.encode(nuevaPassword)
+        );
+
+        usuarioRepository.save(usuario);
+
+        tokenRecuperacion.setUsado(true);
+
+        tokenRepository.save(tokenRecuperacion);
+    }
+}
