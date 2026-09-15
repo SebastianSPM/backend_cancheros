@@ -6,6 +6,8 @@ import com.generation.grupo10.model.Usuario;
 import com.generation.grupo10.repository.UsuarioRepository;
 import com.generation.grupo10.service.JwtService;
 import org.springframework.http.ResponseEntity;
+import com.generation.grupo10.dto.CambiarPasswordRequest;
+import org.springframework.security.core.Authentication;
 
 //encriptar clave
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -223,5 +225,47 @@ public class AuthController {
                     .badRequest()
                     .body(e.getMessage());
         }
+    }
+    //Cambiar contraseña desde el perfil
+
+    @PostMapping("/cambiar-password")
+    public ResponseEntity<?> cambiarPassword(
+            @RequestBody CambiarPasswordRequest request,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+
+        Usuario usuario = usuarioRepository
+                .findByEmail(email)
+                .orElse(null);
+
+        if (usuario == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Usuario no encontrado");
+        }
+
+        // Verificar que la contraseña actual sea correcta
+
+        if (!passwordEncoder.matches(
+                request.getPasswordActual(),
+                usuario.getPassword())) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("La contraseña actual es incorrecta");
+        }
+
+        // Encriptar y guardar la nueva contraseña
+
+        usuario.setPassword(
+                passwordEncoder.encode(request.getNuevaPassword())
+        );
+
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok(
+                "Contraseña actualizada correctamente"
+        );
     }
 }

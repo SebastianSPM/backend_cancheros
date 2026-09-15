@@ -1,5 +1,6 @@
 package com.generation.grupo10.controller;
 
+import com.generation.grupo10.dto.ActualizarPerfilRequest;
 import com.generation.grupo10.dto.UsuarioDTO;
 import com.generation.grupo10.model.Usuario;
 import com.generation.grupo10.repository.UsuarioRepository;
@@ -12,18 +13,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/perfil")
 @RequiredArgsConstructor
 public class PerfilController {
-
     private final UsuarioRepository usuarioRepository;
 
 
     //Ver perfil
-
     @GetMapping
     public ResponseEntity<UsuarioDTO> obtenerPerfil(
             Authentication authentication) {
-
         String email = authentication.getName();
-
         return usuarioRepository.findByEmail(email)
                 .map(usuario -> ResponseEntity.ok(
                         convertirDTO(usuario)
@@ -31,9 +28,30 @@ public class PerfilController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
+    //Actualizar datos del perfil
+    @PutMapping
+    public ResponseEntity<UsuarioDTO> actualizarPerfil(
+            Authentication authentication,
+            @RequestBody ActualizarPerfilRequest datos) {
+        String email = authentication.getName();
+
+        return usuarioRepository.findByEmail(email)
+                .map(usuario -> {
+                    usuario.setNombre(datos.getNombre());
+                    usuario.setApellido(datos.getApellido());
+                    usuario.setTelefono(datos.getTelefono());
+                    Usuario usuarioActualizado =
+                            usuarioRepository.save(usuario);
+                    return ResponseEntity.ok(
+                            convertirDTO(usuarioActualizado)
+                    );
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     //Convertir a dto
     private UsuarioDTO convertirDTO(Usuario usuario) {
-
         return new UsuarioDTO(
                 usuario.getId(),
                 usuario.getNombre(),
