@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.generation.grupo10.enums.TokenPurpose;
+
 @Service
 @RequiredArgsConstructor
 public class RecuperacionPasswordService {
@@ -42,11 +44,12 @@ public class RecuperacionPasswordService {
         );
 
         tokenRecuperacion.setUsado(false);
+        tokenRecuperacion.setPurpose(TokenPurpose.PASSWORD_RESET);
 
         tokenRepository.save(tokenRecuperacion);
 
         String enlace =
-                "http://localhost:3000/reset-password?token="
+                "http://localhost:5502/pages/auth/nueva-password.html?token="
                         + token;
 
         emailService.enviarEnlaceRecuperacion(
@@ -97,5 +100,65 @@ public class RecuperacionPasswordService {
         tokenRecuperacion.setUsado(true);
 
         tokenRepository.save(tokenRecuperacion);
+    }
+
+    public void solicitarCambioPassword(String email) {
+
+        usuarioRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Usuario no encontrado"
+                        )
+                );
+
+        String token = UUID.randomUUID().toString();
+
+        TokenRecuperacion tokenRecuperacion =
+                new TokenRecuperacion();
+
+        tokenRecuperacion.setEmail(email);
+        tokenRecuperacion.setToken(token);
+
+        tokenRecuperacion.setFechaExpiracion(
+                LocalDateTime.now().plusMinutes(15)
+        );
+
+        tokenRecuperacion.setUsado(false);
+
+        tokenRecuperacion.setPurpose(
+                TokenPurpose.PASSWORD_CHANGE
+        );
+
+        tokenRepository.save(tokenRecuperacion);
+
+        String enlace =
+                "http://localhost:5502/pages/auth/nueva-password.html?token="
+                        + token;
+
+        emailService.enviarEnlaceRecuperacion(
+                email,
+                enlace
+        );
+    }
+
+    public void validarCambioPassword(String token) {
+        TokenRecuperacion tokenRecuperacion =
+                tokenRepository
+                        .findByTokenAndPurposeAndUsadoFalse(
+                                token,
+                                TokenPurpose.PASSWORD_CHANGE
+                        )
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Token inválido o ya utilizado"
+                                )
+                        );
+        if (tokenRecuperacion
+                .getFechaExpiracion()
+                .isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(
+                    "El enlace ha expirado"
+            );
+        }
     }
 }

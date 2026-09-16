@@ -44,7 +44,7 @@ public class SecurityConfig {
                         // Cualquiera puede entrar
                         .requestMatchers(
                                 "/auth/login",
-                                "/auth/register",
+                                "/auth/registro",
                                 "/auth/verificar-correo",
                                 "/api/canchas/**",
                                 "/auth/forgot-password",
