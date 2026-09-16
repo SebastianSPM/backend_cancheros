@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/contactos")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ContactosController {
 
