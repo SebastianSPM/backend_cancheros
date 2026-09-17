@@ -132,10 +132,10 @@ public class RecuperacionPasswordService {
         tokenRepository.save(tokenRecuperacion);
 
         String enlace =
-                "http://localhost:5502/pages/auth/nueva-password.html?token="
+                "http://localhost:5502/pages/auth/validar-cambio-password.html?token="
                         + token;
 
-        emailService.enviarEnlaceRecuperacion(
+        emailService.enviarEnlaceCambioPassword(
                 email,
                 enlace
         );
@@ -156,6 +156,69 @@ public class RecuperacionPasswordService {
         if (tokenRecuperacion
                 .getFechaExpiracion()
                 .isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(
+                    "El enlace ha expirado"
+            );
+        }
+    }
+
+    public void solicitarEdicionPerfil(String email) {
+
+        usuarioRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Usuario no encontrado"
+                        )
+                );
+
+        String token = UUID.randomUUID().toString();
+
+        TokenRecuperacion tokenRecuperacion =
+                new TokenRecuperacion();
+
+        tokenRecuperacion.setEmail(email);
+        tokenRecuperacion.setToken(token);
+
+        tokenRecuperacion.setFechaExpiracion(
+                LocalDateTime.now().plusMinutes(15)
+        );
+
+        tokenRecuperacion.setUsado(false);
+
+        tokenRecuperacion.setPurpose(
+                TokenPurpose.PROFILE_EDIT
+        );
+
+        tokenRepository.save(tokenRecuperacion);
+
+        String enlace =
+                "http://localhost:5502/pages/usuario/validar-edicion-perfil.html?token="
+                        + token;
+
+        emailService.enviarEnlaceEdicionPerfil(
+                email,
+                enlace
+        );
+    }
+
+    public void validarEdicionPerfil(String token) {
+
+        TokenRecuperacion tokenRecuperacion =
+                tokenRepository
+                        .findByTokenAndPurposeAndUsadoFalse(
+                                token,
+                                TokenPurpose.PROFILE_EDIT
+                        )
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Token inválido o ya utilizado"
+                                )
+                        );
+
+        if (tokenRecuperacion
+                .getFechaExpiracion()
+                .isBefore(LocalDateTime.now())) {
+
             throw new IllegalArgumentException(
                     "El enlace ha expirado"
             );

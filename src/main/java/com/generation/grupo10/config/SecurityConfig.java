@@ -3,6 +3,7 @@ package com.generation.grupo10.config;
 import com.generation.grupo10.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -49,15 +50,44 @@ public class SecurityConfig {
                                 "/auth/login",
                                 "/auth/registro",
                                 "/auth/verificar-correo",
-                                "/api/canchas/**",
                                 "/auth/forgot-password",
                                 "/auth/reset-password",
+
+                                "/auth/validar-cambio-password",
+                                "/auth/validar-edicion-perfil",
+
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
+
                                 "/api/servicios/**"
                         ).permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/canchas/**"
+                        ).permitAll()
+
+                        // Gestión de canchas solamente para ADMIN
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/canchas/**"
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/canchas/**"
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/canchas/**"
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                "/api/reservas/admin/**"
+                        ).hasRole("ADMIN")
 
                         // Solo ADMIN
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")

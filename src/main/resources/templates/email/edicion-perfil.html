@@ -2,8 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Recuperación de contraseña</title>
-    <!-- ESTE ARCHIVO ES PARA RECUPERAR LA CONTRASEÑA DE LOS USUARIOS -->
+    <title>Validación de edición de perfil</title>
 </head>
 <body style="
     margin: 0;
@@ -19,18 +18,17 @@
         border-radius: 10px;
     ">
     <h2 style="margin-top: 0;">
-        Recuperar contraseña
+        Validar edición de perfil
     </h2>
     <p>
-        Hemos recibido una solicitud para cambiar
-        tu contraseña de Cancheros.
+        Hemos recibido una solicitud para modificar
+        los datos de tu perfil de Cancheros.
     </p>
     <p>
-        Haz clic en el siguiente botón para establecer
-        una nueva contraseña:
+        Para continuar, debes confirmar que tienes
+        acceso al correo electrónico asociado a tu cuenta.
     </p>
     <div style="text-align: center; margin: 30px 0;">
-
         <a th:href="${enlace}"
            style="
                    display: inline-block;
@@ -40,14 +38,14 @@
                    text-decoration: none;
                    border-radius: 6px;
                ">
-            Cambiar contraseña
+            Validar edición de perfil
         </a>
     </div>
     <p>
         Este enlace expirará en 15 minutos.
     </p>
     <p>
-        Si tú no solicitaste este cambio, puedes
+        Si tú no solicitaste esta modificación, puedes
         ignorar este correo.
     </p>
     <hr>
@@ -58,4 +56,3 @@
 </div>
 </body>
 </html>
-

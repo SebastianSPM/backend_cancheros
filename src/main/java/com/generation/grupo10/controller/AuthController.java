@@ -288,4 +288,40 @@ public class AuthController {
                     .body(e.getMessage());
         }
     }
+
+    @PostMapping("/solicitar-edicion-perfil")
+    public ResponseEntity<?> solicitarEdicionPerfil(
+            Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            recuperacionPasswordService.solicitarEdicionPerfil(email);
+            return ResponseEntity.ok(
+                    "Se ha enviado un enlace de validación a tu correo"
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/validar-edicion-perfil")
+    public ResponseEntity<?> validarEdicionPerfil(
+            @RequestParam String token) {
+
+        try {
+
+            recuperacionPasswordService.validarEdicionPerfil(token);
+
+            return ResponseEntity.ok(
+                    "Correo validado correctamente"
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
 }
