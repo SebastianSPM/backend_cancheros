@@ -113,6 +113,31 @@ public class ReservaService {
                 .toList();
     }
 
+    // =========================================================
+    // TODAS LAS RESERVAS - ADMIN
+    // =========================================================
+
+    @Transactional(readOnly = true)
+    public List<ReservaResponse> obtenerTodasLasReservas() {
+
+        return reservaRepository.findAll()
+                .stream()
+                .map(this::convertirResponse)
+                .toList();
+    }
+
+    // =========================================================
+    // DETALLE DE RESERVA - ADMIN
+    // =========================================================
+
+    @Transactional(readOnly = true)
+    public ReservaResponse obtenerReservaAdmin(Long reservaId) {
+
+        Reserva reserva = buscarReserva(reservaId);
+
+        return convertirResponse(reserva);
+    }
+
 
     // =========================================================
     // DETALLE DE RESERVA
@@ -128,6 +153,25 @@ public class ReservaService {
         validarPropietario(reserva, email);
 
         return convertirResponse(reserva);
+    }
+
+    // =========================================================
+    // CANCELAR RESERVA - ADMIN
+    // =========================================================
+
+    public void cancelarReservaAdmin(Long reservaId) {
+
+        Reserva reserva = buscarReserva(reservaId);
+
+        if (reserva.getEstado() == EstadoReserva.CANCELADA) {
+            throw new IllegalArgumentException(
+                    "La reserva ya está cancelada"
+            );
+        }
+
+        reserva.setEstado(EstadoReserva.CANCELADA);
+
+        reservaRepository.save(reserva);
     }
 
 

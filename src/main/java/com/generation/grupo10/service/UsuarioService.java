@@ -1,8 +1,8 @@
 package com.generation.grupo10.service;
 
+import com.generation.grupo10.dto.UsuarioDTO;
 import com.generation.grupo10.model.Usuario;
 import com.generation.grupo10.repository.UsuarioRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +12,9 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Usuario> listarUsuarios() {
@@ -27,12 +25,30 @@ public class UsuarioService {
         return usuarioRepository.findById(id);
     }
 
-    public Usuario guardarUsuario(Usuario usuario) {
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        return usuarioRepository.save(usuario);
+    public Optional<Usuario> actualizarUsuario(
+            Long id,
+            UsuarioDTO dto) {
+
+        return usuarioRepository.findById(id)
+                .map(usuario -> {
+
+                    usuario.setNombre(dto.getNombre());
+                    usuario.setApellido(dto.getApellido());
+                    usuario.setEmail(dto.getEmail());
+                    usuario.setTelefono(dto.getTelefono());
+                    usuario.setRol(dto.getRol());
+
+                    return usuarioRepository.save(usuario);
+                });
     }
 
-    public void eliminarUsuario(Long id) {
+    public boolean eliminarUsuario(Long id) {
+
+        if (!usuarioRepository.existsById(id)) {
+            return false;
+        }
+
         usuarioRepository.deleteById(id);
+        return true;
     }
 }

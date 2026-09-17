@@ -1,5 +1,6 @@
 package com.generation.grupo10.model;
 
+import com.generation.grupo10.enums.TokenPurpose;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,4 +29,8 @@ public class TokenRecuperacion {
 
     @Column(nullable = false)
     private boolean usado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TokenPurpose purpose;
 }

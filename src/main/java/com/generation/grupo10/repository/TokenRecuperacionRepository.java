@@ -1,5 +1,6 @@
 package com.generation.grupo10.repository;
 
+import com.generation.grupo10.enums.TokenPurpose;
 import com.generation.grupo10.model.TokenRecuperacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,10 @@ public interface TokenRecuperacionRepository
     Optional<TokenRecuperacion> findByTokenAndUsadoFalse(
             String token
     );
+
+    Optional<TokenRecuperacion> findByTokenAndPurposeAndUsadoFalse(
+            String token,
+            TokenPurpose purpose
+    );
+
 }

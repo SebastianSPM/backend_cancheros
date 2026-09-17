@@ -53,4 +53,67 @@ public class EmailService {
             throw new RuntimeException("No se pudo enviar el correo", e);
         }
     }
+
+    public void enviarEnlaceCambioPassword(
+            String destinatario,
+            String enlace) {
+        try {
+            Context context = new Context();
+            context.setVariable("enlace", enlace);
+            String html = templateEngine.process("email/cambio-password", context);
+            MimeMessage correo = mailSender.createMimeMessage();
+
+            MimeMessageHelper helper = new MimeMessageHelper(correo, true, "UTF-8");
+            helper.setTo(destinatario);
+            helper.setSubject("Validación de cambio de contraseña - Cancheros");
+            helper.setText(html, true);
+            mailSender.send(correo);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("No se pudo enviar el correo", e);
+        }
+    }
+
+    public void enviarEnlaceEdicionPerfil(
+            String destinatario,
+            String enlace) {
+
+        try {
+
+            Context context = new Context();
+            context.setVariable("enlace", enlace);
+
+            String html = templateEngine.process(
+                    "email/edicion-perfil",
+                    context
+            );
+
+            MimeMessage correo =
+                    mailSender.createMimeMessage();
+
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(
+                            correo,
+                            true,
+                            "UTF-8"
+                    );
+
+            helper.setTo(destinatario);
+
+            helper.setSubject(
+                    "Validación de edición de perfil - Cancheros"
+            );
+
+            helper.setText(html, true);
+
+            mailSender.send(correo);
+
+        } catch (MessagingException e) {
+
+            throw new RuntimeException(
+                    "No se pudo enviar el correo",
+                    e
+            );
+        }
+    }
 }

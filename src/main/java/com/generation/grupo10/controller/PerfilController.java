@@ -1,8 +1,8 @@
 package com.generation.grupo10.controller;
 
+import com.generation.grupo10.dto.EditarPerfilRequest;
 import com.generation.grupo10.dto.UsuarioDTO;
-import com.generation.grupo10.model.Usuario;
-import com.generation.grupo10.repository.UsuarioRepository;
+import com.generation.grupo10.service.PerfilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,36 +13,50 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PerfilController {
 
-    private final UsuarioRepository usuarioRepository;
+    private final PerfilService perfilService;
 
-
-    //Ver perfil
+    // Ver perfil
 
     @GetMapping
-    public ResponseEntity<UsuarioDTO> obtenerPerfil(
+    public ResponseEntity<?> obtenerPerfil(
             Authentication authentication) {
 
-        String email = authentication.getName();
+        try {
 
-        return usuarioRepository.findByEmail(email)
-                .map(usuario -> ResponseEntity.ok(
-                        convertirDTO(usuario)
-                ))
-                .orElse(ResponseEntity.notFound().build());
+            String email = authentication.getName();
+
+            return ResponseEntity.ok(
+                    perfilService.obtenerPerfil(email)
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
-    //Convertir a dto
-    private UsuarioDTO convertirDTO(Usuario usuario) {
+    // Editar perfil
 
-        return new UsuarioDTO(
-                usuario.getId(),
-                usuario.getNombre(),
-                usuario.getApellido(),
-                usuario.getEmail(),
-                usuario.getTelefono(),
-                usuario.getFotoPerfil(),
-                usuario.getRol(),
-                usuario.getFechaCreacion()
-        );
+    @PutMapping
+    public ResponseEntity<?> editarPerfil(
+            @RequestBody EditarPerfilRequest request,
+            Authentication authentication) {
+
+        try {
+
+            String email = authentication.getName();
+
+            return ResponseEntity.ok(
+                    perfilService.editarPerfil(email, request)
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 }

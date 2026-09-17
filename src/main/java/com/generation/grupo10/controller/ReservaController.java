@@ -139,4 +139,42 @@ public class ReservaController {
                 )
         );
     }
+
+    // =========================================================
+    // TODAS LAS RESERVAS - ADMIN
+    // =========================================================
+
+    @GetMapping("/admin")
+    public ResponseEntity<List<ReservaResponse>> obtenerTodasLasReservas() {
+
+        return ResponseEntity.ok(
+                reservaService.obtenerTodasLasReservas()
+        );
+    }
+
+    // =========================================================
+    // DETALLE DE RESERVA - ADMIN
+    // =========================================================
+
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<ReservaResponse> obtenerReservaAdmin(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                reservaService.obtenerReservaAdmin(id)
+        );
+    }
+
+    // =========================================================
+    // CANCELAR RESERVA - ADMIN
+    // =========================================================
+
+    @PatchMapping("/admin/{id}/cancelar")
+    public ResponseEntity<Void> cancelarReservaAdmin(
+            @PathVariable Long id) {
+
+        reservaService.cancelarReservaAdmin(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

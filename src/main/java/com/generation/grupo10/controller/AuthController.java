@@ -8,6 +8,8 @@ import com.generation.grupo10.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 
 //encriptar clave
@@ -29,6 +31,10 @@ import com.generation.grupo10.dto.ResetPasswordRequest;
 
 //swagger
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.time.Duration;
+
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/auth")
@@ -94,7 +100,17 @@ public class AuthController {
 
         String token = jwtService.generarToken(usuario.getEmail(), usuario.getRol());
 
-        return ResponseEntity.ok(new LoginResponse(token, usuarioDTO));
+        ResponseCookie cookie = ResponseCookie.from("token", token)
+                .httpOnly(true)
+                .secure(false) // PENDIENTE {OJO} ESTO SE DEBE CAMBIAR A TRUE EN PRODUCCIÓN
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ofHours(2))
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(usuarioDTO);
     }
 
     // swagger
@@ -106,7 +122,7 @@ public class AuthController {
             }
     )
     //Register
-    @PostMapping("/register")
+    @PostMapping("/registro")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -142,17 +158,6 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(usuarioDTO);
-    }
-
-
-    @PostMapping("/test-code")
-    public ResponseEntity<String> enviarCodigoPrueba(@RequestParam String email) {
-
-        codigoVerificacionService.enviarCodigo(email);
-
-        return ResponseEntity.ok(
-                "Código enviado correctamente"
-        );
     }
 
     @Operation(summary = "Verificar correo electrónico", description = "Verifica el código enviado al correo electrónico del usuario."
@@ -223,6 +228,100 @@ public class AuthController {
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(false) // true en producción con HTTPS
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Sesión cerrada correctamente");
+    }
+
+    @PostMapping("/solicitar-cambio-password")
+    public ResponseEntity<?> solicitarCambioPassword(
+            Authentication authentication) {
+
+        try {
+
+            String email = authentication.getName();
+
+            recuperacionPasswordService.solicitarCambioPassword(email);
+
+            return ResponseEntity.ok(
+                    "Se ha enviado un enlace de validación a tu correo"
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/validar-cambio-password")
+    public ResponseEntity<?> validarCambioPassword(
+            @RequestParam String token) {
+
+        try {
+
+            recuperacionPasswordService.validarCambioPassword(token);
+
+            return ResponseEntity.ok(
+                    "Correo validado correctamente"
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/solicitar-edicion-perfil")
+    public ResponseEntity<?> solicitarEdicionPerfil(
+            Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            recuperacionPasswordService.solicitarEdicionPerfil(email);
+            return ResponseEntity.ok(
+                    "Se ha enviado un enlace de validación a tu correo"
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/validar-edicion-perfil")
+    public ResponseEntity<?> validarEdicionPerfil(
+            @RequestParam String token) {
+
+        try {
+
+            recuperacionPasswordService.validarEdicionPerfil(token);
+
+            return ResponseEntity.ok(
+                    "Correo validado correctamente"
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
         }
     }
 }
