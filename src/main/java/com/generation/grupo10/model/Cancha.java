@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.math.BigDecimal;
 
@@ -51,4 +53,13 @@ public class Cancha {
     public String getNombre() {
         return nombreCancha;
     }
+
+    @OneToMany(
+            mappedBy = "cancha",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("orden ASC")
+    private List<CanchaImagen> imagenes =
+            new ArrayList<>();
 }

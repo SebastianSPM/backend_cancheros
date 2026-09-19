@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
@@ -71,5 +74,22 @@ public class CanchaController {
         canchaService.eliminar(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(
+            value = "/{id}/imagenes",
+            consumes = "multipart/form-data"
+    )
+    public ResponseEntity<CanchaDTO> subirImagenes(
+            @PathVariable Long id,
+            @RequestParam("imagenes")
+            List<MultipartFile> imagenes) {
+
+        return ResponseEntity.ok(
+                canchaService.subirImagenes(
+                        id,
+                        imagenes
+                )
+        );
     }
 }
