@@ -10,7 +10,11 @@ import com.generation.grupo10.repository.CanchaServicioRepository;
 import com.generation.grupo10.repository.ServicioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.generation.grupo10.model.CanchaImagen;
+//array
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,6 +24,7 @@ public class CanchaService {
     private final CanchaRepository canchaRepository;
     private final ServicioRepository servicioRepository;
     private final CanchaServicioRepository canchaServicioRepository;
+    private final CloudinaryService cloudinaryService;
 
     public List<CanchaDTO> obtenerTodas() {
 
@@ -50,7 +55,6 @@ public class CanchaService {
         cancha.setTipo(dto.getTipo());
         cancha.setRating(dto.getRating());
         cancha.setTotalResenas(dto.getTotalResenas());
-        cancha.setImagenUrl(dto.getImagenUrl());
         cancha.setDisponible(dto.getDisponible());
 
         Cancha canchaGuardada = canchaRepository.save(cancha);
@@ -72,7 +76,6 @@ public class CanchaService {
         cancha.setTipo(dto.getTipo());
         cancha.setRating(dto.getRating());
         cancha.setTotalResenas(dto.getTotalResenas());
-        cancha.setImagenUrl(dto.getImagenUrl());
         cancha.setDisponible(dto.getDisponible());
 
         Cancha canchaActualizada = canchaRepository.save(cancha);
@@ -93,6 +96,14 @@ public class CanchaService {
 
     private CanchaDTO convertirADTO(Cancha cancha) {
 
+        List<String> imagenes =
+                obtenerUrlsImagenes(cancha);
+
+        String primeraImagen =
+                imagenes.isEmpty()
+                        ? null
+                        : imagenes.get(0);
+
         return new CanchaDTO(
                 cancha.getId(),
                 cancha.getNombreCancha(),
@@ -102,7 +113,8 @@ public class CanchaService {
                 cancha.getTipo(),
                 cancha.getRating(),
                 cancha.getTotalResenas(),
-                cancha.getImagenUrl(),
+                primeraImagen,
+                imagenes,
                 cancha.getDisponible()
         );
     }
@@ -123,5 +135,106 @@ public class CanchaService {
                 new CanchaServicio(cancha, servicio);
 
         canchaServicioRepository.save(canchaServicio);
+    }
+
+    public CanchaDTO subirImagenes(
+            Long id,
+            List<MultipartFile> archivos) {
+
+        Cancha cancha =
+                canchaRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Cancha no encontrada con id: " + id
+                                )
+                        );
+
+        if (
+                archivos == null ||
+                        archivos.isEmpty()
+        ) {
+
+            throw new IllegalArgumentException(
+                    "Debes seleccionar al menos una imagen."
+            );
+        }
+
+        int imagenesActuales =
+                obtenerUrlsImagenes(cancha).size();
+
+        if (
+                imagenesActuales +
+                        archivos.size() > 3
+        ) {
+
+            throw new IllegalArgumentException(
+                    "Una cancha puede tener máximo 3 imágenes."
+            );
+        }
+
+        int ordenActual =
+                imagenesActuales;
+
+        for (MultipartFile archivo : archivos) {
+
+            CloudinaryService.ResultadoImagen resultado =
+                    cloudinaryService.subirImagen(
+                            archivo,
+                            "cancheros/canchas/" + id
+                    );
+
+            CanchaImagen imagen =
+                    new CanchaImagen();
+
+            imagen.setUrl(
+                    resultado.url()
+            );
+
+            imagen.setPublicId(
+                    resultado.publicId()
+            );
+
+            imagen.setOrden(
+                    ordenActual++
+            );
+
+            imagen.setCancha(
+                    cancha
+            );
+
+            cancha.getImagenes().add(
+                    imagen
+            );
+        }
+
+        canchaRepository.save(cancha);
+
+        return convertirADTO(cancha);
+    }
+
+    private List<String> obtenerUrlsImagenes(Cancha cancha) {
+
+        List<String> urls = new ArrayList<>();
+
+        // Imagen antigua, por compatibilidad
+        if (
+                cancha.getImagenUrl() != null &&
+                        !cancha.getImagenUrl().isBlank()
+        ) {
+            urls.add(cancha.getImagenUrl());
+        }
+
+        // Nuevas imágenes de Cloudinary
+        if (cancha.getImagenes() != null) {
+
+            urls.addAll(
+                    cancha.getImagenes()
+                            .stream()
+                            .map(CanchaImagen::getUrl)
+                            .toList()
+            );
+        }
+
+        return urls;
     }
 }
