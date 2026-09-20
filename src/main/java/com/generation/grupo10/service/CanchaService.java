@@ -11,6 +11,7 @@ import com.generation.grupo10.repository.ServicioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.generation.grupo10.model.CanchaImagen;
 //array
@@ -26,6 +27,7 @@ public class CanchaService {
     private final CanchaServicioRepository canchaServicioRepository;
     private final CloudinaryService cloudinaryService;
 
+    @Transactional(readOnly = true)
     public List<CanchaDTO> obtenerTodas() {
 
         return canchaRepository.findAll()
@@ -34,6 +36,7 @@ public class CanchaService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public CanchaDTO obtenerPorId(Long id) {
 
         Cancha cancha = canchaRepository.findById(id)
@@ -137,36 +140,20 @@ public class CanchaService {
         canchaServicioRepository.save(canchaServicio);
     }
 
+    @Transactional
     public CanchaDTO subirImagenes(
             Long id,
             List<MultipartFile> archivos) {
 
-        Cancha cancha =
-                canchaRepository.findById(id)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Cancha no encontrada con id: " + id
-                                )
-                        );
+        Cancha cancha = canchaRepository.findById(id).orElseThrow(() -> new RuntimeException("Cancha no encontrada con id: " + id));
 
-        if (
-                archivos == null ||
-                        archivos.isEmpty()
-        ) {
-
-            throw new IllegalArgumentException(
-                    "Debes seleccionar al menos una imagen."
-            );
+        if (archivos == null || archivos.isEmpty()) {
+            throw new IllegalArgumentException("Debes seleccionar al menos una imagen.");
         }
 
-        int imagenesActuales =
-                obtenerUrlsImagenes(cancha).size();
+        int imagenesActuales = obtenerUrlsImagenes(cancha).size();
 
-        if (
-                imagenesActuales +
-                        archivos.size() > 3
-        ) {
-
+        if (imagenesActuales + archivos.size() > 3) {
             throw new IllegalArgumentException(
                     "Una cancha puede tener máximo 3 imágenes."
             );
