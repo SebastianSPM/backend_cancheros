@@ -50,7 +50,7 @@ public class RecuperacionPasswordService {
         tokenRepository.save(tokenRecuperacion);
 
         String enlace =
-                "http://localhost:5502/pages/auth/nueva-password.html?token="
+                "https://cancheros-proyecto.vercel.app/pages/auth/nueva-password.html?token="
                         + token;
 
         emailService.enviarEnlaceRecuperacion(
