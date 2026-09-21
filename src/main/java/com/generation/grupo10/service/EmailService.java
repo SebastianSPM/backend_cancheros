@@ -9,7 +9,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final ResendService resendService;
+    private final SendGridService sendGridService;
     private final SpringTemplateEngine templateEngine;
 
     public void enviarCodigo(String destinatario, String codigo) {
@@ -22,7 +22,7 @@ public class EmailService {
                 context
         );
 
-        resendService.enviarCorreo(
+        sendGridService.enviarCorreo(
                 destinatario,
                 "Código de verificación - Cancheros",
                 html
@@ -42,7 +42,7 @@ public class EmailService {
                 context
         );
 
-        resendService.enviarCorreo(
+        sendGridService.enviarCorreo(
                 destinatario,
                 "Recuperación de contraseña - Cancheros",
                 html
@@ -62,7 +62,7 @@ public class EmailService {
                 context
         );
 
-        resendService.enviarCorreo(
+        sendGridService.enviarCorreo(
                 destinatario,
                 "Validación de cambio de contraseña - Cancheros",
                 html
@@ -82,7 +82,7 @@ public class EmailService {
                 context
         );
 
-        resendService.enviarCorreo(
+        sendGridService.enviarCorreo(
                 destinatario,
                 "Validación de edición de perfil - Cancheros",
                 html
@@ -109,7 +109,7 @@ public class EmailService {
                 context
         );
 
-        resendService.enviarCorreo(
+        sendGridService.enviarCorreo(
                 destinatario,
                 "Nuevo mensaje de contacto - Cancheros",
                 html
