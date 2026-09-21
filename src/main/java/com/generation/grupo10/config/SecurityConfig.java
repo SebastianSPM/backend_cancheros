@@ -52,7 +52,6 @@ public class SecurityConfig {
                                 "/auth/verificar-correo",
                                 "/auth/forgot-password",
                                 "/auth/reset-password",
-
                                 "/auth/validar-cambio-password",
                                 "/auth/validar-edicion-perfil",
 
@@ -90,13 +89,19 @@ public class SecurityConfig {
                         ).hasRole("ADMIN")
 
                         // Solo ADMIN
-                        .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/api/usuarios/**"
+                        ).hasRole("ADMIN")
 
                         // Cualquier usuario autenticado
-                        .requestMatchers("/api/reservas/**").authenticated()
+                        .requestMatchers(
+                                "/api/reservas/**"
+                        ).authenticated()
 
                         // Perfil
-                        .requestMatchers("/api/perfil/**").authenticated()
+                        .requestMatchers(
+                                "/api/perfil/**"
+                        ).authenticated()
 
                         // Lo demás
                         .anyRequest().authenticated()
@@ -105,18 +110,50 @@ public class SecurityConfig {
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
+
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+
+        CorsConfiguration configuration =
+                new CorsConfiguration();
+
+        // Frontend de producción
+        configuration.setAllowedOrigins(
+                List.of(
+                        "https://cancheros-proyecto.vercel.app"
+                )
+        );
+
+        // Métodos permitidos
+        configuration.setAllowedMethods(
+                Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
+        );
+
+        // Headers permitidos
+        configuration.setAllowedHeaders(
+                List.of("*")
+        );
+
+        // Permite enviar/recibir cookies
         configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
+
         return source;
     }
 }
