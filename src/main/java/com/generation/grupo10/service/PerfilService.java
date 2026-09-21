@@ -18,6 +18,7 @@ public class PerfilService {
 
     private final UsuarioRepository usuarioRepository;
     private final TokenRecuperacionRepository tokenRecuperacionRepository;
+    private final CodigoVerificacionService codigoVerificacionService;
 
     public UsuarioDTO obtenerPerfil(String email) {
 
@@ -92,5 +93,73 @@ public class PerfilService {
                 usuario.getRol(),
                 usuario.getFechaCreacion()
         );
+    }
+
+
+    public void solicitarCambioCorreo(
+            String emailActual,
+            String nuevoCorreo) {
+
+        Usuario usuario = usuarioRepository
+                .findByEmail(emailActual)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Usuario no encontrado"
+                        )
+                );
+
+        if (nuevoCorreo == null || nuevoCorreo.isBlank()) {
+            throw new IllegalArgumentException(
+                    "El nuevo correo es obligatorio"
+            );
+        }
+
+        if (usuario.getEmail().equalsIgnoreCase(nuevoCorreo)) {
+            throw new IllegalArgumentException(
+                    "El nuevo correo debe ser diferente al actual"
+            );
+        }
+
+        if (usuarioRepository.findByEmail(nuevoCorreo).isPresent()) {
+            throw new IllegalArgumentException(
+                    "El nuevo correo ya está registrado"
+            );
+        }
+
+        codigoVerificacionService.enviarCodigoCambioCorreo(
+                nuevoCorreo
+        );
+    }
+
+    public UsuarioDTO verificarCambioCorreo(
+            String emailActual,
+            String nuevoCorreo,
+            String codigo) {
+
+        Usuario usuario = usuarioRepository
+                .findByEmail(emailActual)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Usuario no encontrado"
+                        )
+                );
+
+        if (usuarioRepository.findByEmail(nuevoCorreo).isPresent()) {
+            throw new IllegalArgumentException(
+                    "El nuevo correo ya está registrado"
+            );
+        }
+
+        codigoVerificacionService.validarCodigoCambioCorreo(
+                nuevoCorreo,
+                codigo
+        );
+
+        usuario.setEmail(nuevoCorreo);
+        usuario.setCorreoVerificado(true);
+
+        usuarioRepository.save(usuario);
+
+        return convertirDTO(usuario);
     }
 }

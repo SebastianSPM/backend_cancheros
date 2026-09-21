@@ -116,4 +116,54 @@ public class EmailService {
             );
         }
     }
+
+    public void enviarContacto(
+            String destinatario,
+            String nombre,
+            String email,
+            String telefono,
+            String mensaje) {
+
+        try {
+
+            Context context = new Context();
+
+            context.setVariable("nombre", nombre);
+            context.setVariable("email", email);
+            context.setVariable("telefono", telefono);
+            context.setVariable("mensaje", mensaje);
+
+            String html = templateEngine.process(
+                    "email/contacto",
+                    context
+            );
+
+            MimeMessage correo =
+                    mailSender.createMimeMessage();
+
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(
+                            correo,
+                            true,
+                            "UTF-8"
+                    );
+
+            helper.setTo(destinatario);
+
+            helper.setSubject(
+                    "Nuevo mensaje de contacto - Cancheros"
+            );
+
+            helper.setText(html, true);
+
+            mailSender.send(correo);
+
+        } catch (MessagingException e) {
+
+            throw new RuntimeException(
+                    "No se pudo enviar el correo de contacto",
+                    e
+            );
+        }
+    }
 }

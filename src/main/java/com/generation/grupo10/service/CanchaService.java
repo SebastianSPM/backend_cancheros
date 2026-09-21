@@ -13,8 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
+//Paginación en canchas
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.generation.grupo10.model.CanchaImagen;
 //array
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +33,20 @@ public class CanchaService {
     private final CloudinaryService cloudinaryService;
 
     @Transactional(readOnly = true)
-    public List<CanchaDTO> obtenerTodas() {
+    public Page<CanchaDTO> obtenerTodas(
+            String ubicacion,
+            String tipo,
+            BigDecimal precioMin,
+            BigDecimal precioMax,
+            Pageable pageable) {
 
-        return canchaRepository.findAll()
-                .stream()
-                .map(this::convertirADTO)
-                .toList();
+        return canchaRepository.buscarConFiltros(
+                ubicacion,
+                tipo,
+                precioMin,
+                precioMax,
+                pageable
+        ).map(this::convertirADTO);
     }
 
     @Transactional(readOnly = true)
