@@ -50,11 +50,11 @@
 				<version>2.4.0</version>
 			</dependency>
 
-			<!-- Resend -->
+			<!-- SendGrid -->
 			<dependency>
-				<groupId>com.resend</groupId>
-				<artifactId>resend-java</artifactId>
-				<version>4.24.0</version>
+				<groupId>com.sendgrid</groupId>
+				<artifactId>sendgrid-java</artifactId>
+				<version>4.10.3</version>
 			</dependency>
 
 			<!-- MongoDB
