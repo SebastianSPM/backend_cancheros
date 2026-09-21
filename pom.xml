@@ -50,6 +50,13 @@
 				<version>2.4.0</version>
 			</dependency>
 
+			<!-- Resend -->
+			<dependency>
+				<groupId>com.resend</groupId>
+				<artifactId>resend-java</artifactId>
+				<version>4.24.0</version>
+			</dependency>
+
 			<!-- MongoDB
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
