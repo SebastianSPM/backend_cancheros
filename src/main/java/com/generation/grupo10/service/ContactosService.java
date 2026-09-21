@@ -6,6 +6,7 @@ import com.generation.grupo10.model.Contactos;
 import com.generation.grupo10.repository.ContactosRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,10 @@ import java.util.List;
 public class ContactosService {
 
     private final ContactosRepository contactosRepository;
+    private final EmailService emailService;
+
+    @Value("${app.admin.email}")
+    private String correoAdministrador;
 
     public List<ContactoResponse> obtenerTodos() {
 
@@ -36,6 +41,14 @@ public class ContactosService {
         contacto.setFechaEnvio(LocalDateTime.now());
 
         Contactos contactoGuardado = contactosRepository.save(contacto);
+
+        emailService.enviarContacto(
+                correoAdministrador,
+                contacto.getNombre(),
+                contacto.getEmail(),
+                contacto.getTelefono(),
+                contacto.getMensaje()
+        );
 
         return convertirAResponse(contactoGuardado);
     }

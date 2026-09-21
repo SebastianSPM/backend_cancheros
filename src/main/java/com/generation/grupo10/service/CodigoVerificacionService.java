@@ -94,4 +94,68 @@ public class CodigoVerificacionService {
 
         return String.valueOf(numero);
     }
+
+    public void enviarCodigoCambioCorreo(String nuevoCorreo) {
+
+        String codigo = generarCodigo();
+
+        CodigoVerificacion codigoVerificacion =
+                new CodigoVerificacion();
+
+        codigoVerificacion.setEmail(nuevoCorreo);
+        codigoVerificacion.setCodigo(codigo);
+
+        codigoVerificacion.setFechaExpiracion(
+                LocalDateTime.now().plusMinutes(10)
+        );
+
+        codigoVerificacion.setUsado(false);
+
+        codigoRepository.save(codigoVerificacion);
+
+        emailService.enviarCodigo(
+                nuevoCorreo,
+                codigo
+        );
+    }
+
+    public void validarCodigoCambioCorreo(
+            String nuevoCorreo,
+            String codigo) {
+
+        CodigoVerificacion codigoVerificacion =
+                codigoRepository
+                        .findTopByEmailAndUsadoFalseOrderByIdDesc(
+                                nuevoCorreo
+                        )
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Código no encontrado o ya utilizado"
+                                )
+                        );
+
+        if (codigoVerificacion
+                .getFechaExpiracion()
+                .isBefore(LocalDateTime.now())) {
+
+            throw new IllegalArgumentException(
+                    "El código ha expirado"
+            );
+        }
+
+        if (!codigoVerificacion
+                .getCodigo()
+                .equals(codigo)) {
+
+            throw new IllegalArgumentException(
+                    "Código incorrecto"
+            );
+        }
+
+        codigoVerificacion.setUsado(true);
+
+        codigoRepository.save(codigoVerificacion);
+    }
+
+
 }

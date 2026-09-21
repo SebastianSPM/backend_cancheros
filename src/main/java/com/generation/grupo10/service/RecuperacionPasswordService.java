@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import com.generation.grupo10.enums.TokenPurpose;
@@ -64,7 +65,13 @@ public class RecuperacionPasswordService {
 
         TokenRecuperacion tokenRecuperacion =
                 tokenRepository
-                        .findByTokenAndUsadoFalse(token)
+                        .findByTokenAndUsadoFalseAndPurposeIn(
+                                token,
+                                List.of(
+                                        TokenPurpose.PASSWORD_RESET,
+                                        TokenPurpose.PASSWORD_CHANGE
+                                )
+                        )
                         .orElseThrow(() ->
                                 new IllegalArgumentException(
                                         "Token inválido o ya utilizado"

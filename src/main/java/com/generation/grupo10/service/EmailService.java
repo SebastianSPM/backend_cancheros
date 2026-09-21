@@ -1,10 +1,6 @@
 package com.generation.grupo10.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -13,107 +9,110 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private final ResendService resendService;
     private final SpringTemplateEngine templateEngine;
 
     public void enviarCodigo(String destinatario, String codigo) {
 
-        try {
+        Context context = new Context();
+        context.setVariable("codigo", codigo);
 
-            Context context = new Context();
-            context.setVariable("codigo", codigo);
-            String html = templateEngine.process("email/verificacion", context);
-            MimeMessage correo = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(correo, true, "UTF-8");
-            helper.setTo(destinatario);
-            helper.setSubject("Código de verificación - Cancheros");
+        String html = templateEngine.process(
+                "email/verificacion",
+                context
+        );
 
-            helper.setText(html, true);
-            mailSender.send(correo);
-        } catch (MessagingException e) {
-            throw new RuntimeException("No se pudo enviar el correo", e);
-        }
+        resendService.enviarCorreo(
+                destinatario,
+                "Código de verificación - Cancheros",
+                html
+        );
     }
 
-    public void enviarEnlaceRecuperacion(String destinatario, String enlace) {
-        try {
+    public void enviarEnlaceRecuperacion(
+            String destinatario,
+            String enlace
+    ) {
 
-            Context context = new Context();
-            context.setVariable("enlace", enlace);
+        Context context = new Context();
+        context.setVariable("enlace", enlace);
 
-            String html = templateEngine.process("email/recuperacion", context);
-            MimeMessage correo = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(correo, true, "UTF-8");
-            helper.setTo(destinatario);
-            helper.setSubject("Recuperación de contraseña - Cancheros");
-            helper.setText(html, true);
-            mailSender.send(correo);
+        String html = templateEngine.process(
+                "email/recuperacion",
+                context
+        );
 
-        } catch (MessagingException e) {
-            throw new RuntimeException("No se pudo enviar el correo", e);
-        }
+        resendService.enviarCorreo(
+                destinatario,
+                "Recuperación de contraseña - Cancheros",
+                html
+        );
     }
 
     public void enviarEnlaceCambioPassword(
             String destinatario,
-            String enlace) {
-        try {
-            Context context = new Context();
-            context.setVariable("enlace", enlace);
-            String html = templateEngine.process("email/cambio-password", context);
-            MimeMessage correo = mailSender.createMimeMessage();
+            String enlace
+    ) {
 
-            MimeMessageHelper helper = new MimeMessageHelper(correo, true, "UTF-8");
-            helper.setTo(destinatario);
-            helper.setSubject("Validación de cambio de contraseña - Cancheros");
-            helper.setText(html, true);
-            mailSender.send(correo);
+        Context context = new Context();
+        context.setVariable("enlace", enlace);
 
-        } catch (MessagingException e) {
-            throw new RuntimeException("No se pudo enviar el correo", e);
-        }
+        String html = templateEngine.process(
+                "email/cambio-password",
+                context
+        );
+
+        resendService.enviarCorreo(
+                destinatario,
+                "Validación de cambio de contraseña - Cancheros",
+                html
+        );
     }
 
     public void enviarEnlaceEdicionPerfil(
             String destinatario,
-            String enlace) {
+            String enlace
+    ) {
 
-        try {
+        Context context = new Context();
+        context.setVariable("enlace", enlace);
 
-            Context context = new Context();
-            context.setVariable("enlace", enlace);
+        String html = templateEngine.process(
+                "email/edicion-perfil",
+                context
+        );
 
-            String html = templateEngine.process(
-                    "email/edicion-perfil",
-                    context
-            );
+        resendService.enviarCorreo(
+                destinatario,
+                "Validación de edición de perfil - Cancheros",
+                html
+        );
+    }
 
-            MimeMessage correo =
-                    mailSender.createMimeMessage();
+    public void enviarContacto(
+            String destinatario,
+            String nombre,
+            String email,
+            String telefono,
+            String mensaje
+    ) {
 
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(
-                            correo,
-                            true,
-                            "UTF-8"
-                    );
+        Context context = new Context();
 
-            helper.setTo(destinatario);
+        context.setVariable("nombre", nombre);
+        context.setVariable("email", email);
+        context.setVariable("telefono", telefono);
+        context.setVariable("mensaje", mensaje);
 
-            helper.setSubject(
-                    "Validación de edición de perfil - Cancheros"
-            );
+        String html = templateEngine.process(
+                "email/contacto",
+                context
+        );
 
-            helper.setText(html, true);
-
-            mailSender.send(correo);
-
-        } catch (MessagingException e) {
-
-            throw new RuntimeException(
-                    "No se pudo enviar el correo",
-                    e
-            );
-        }
+        resendService.enviarCorreo(
+                destinatario,
+                "Nuevo mensaje de contacto - Cancheros",
+                html
+        );
     }
 }

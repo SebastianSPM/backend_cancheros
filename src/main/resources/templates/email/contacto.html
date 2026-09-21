@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo mensaje de contacto - Cancheros</title>
+</head>
+
+<body>
+
+<h2>Nuevo mensaje de contacto</h2>
+
+<p>
+    <strong>Nombre:</strong>
+    <span th:text="${nombre}"></span>
+</p>
+
+<p>
+    <strong>Correo:</strong>
+    <span th:text="${email}"></span>
+</p>
+
+<p>
+    <strong>Teléfono:</strong>
+    <span th:text="${telefono}"></span>
+</p>
+
+<h3>Mensaje:</h3>
+
+<p th:text="${mensaje}"></p>
+
+</body>
+</html>

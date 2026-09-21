@@ -7,9 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//Paginación en canchas
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -20,10 +26,24 @@ public class CanchaController {
     private final CanchaService canchaService;
 
     @GetMapping
-    public ResponseEntity<List<CanchaDTO>> obtenerTodas() {
+    public ResponseEntity<Page<CanchaDTO>> obtenerTodas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) BigDecimal precioMin,
+            @RequestParam(required = false) BigDecimal precioMax) {
+
+        Pageable pageable = PageRequest.of(page, size);
 
         return ResponseEntity.ok(
-                canchaService.obtenerTodas()
+                canchaService.obtenerTodas(
+                        ubicacion,
+                        tipo,
+                        precioMin,
+                        precioMax,
+                        pageable
+                )
         );
     }
 
