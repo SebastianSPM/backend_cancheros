@@ -1,12 +1,11 @@
 package com.generation.grupo10.dto;
 
-
-
 import com.generation.grupo10.model.EstadoReserva;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -16,6 +15,8 @@ import java.time.LocalTime;
 public class ReservaResponse {
 
     private Long id;
+
+    private Long usuarioId;
 
     private Long canchaId;
 
@@ -35,7 +36,9 @@ public class ReservaResponse {
 
     private Integer duracion;
 
-    private Double total;
+    private BigDecimal precioHora;
+
+    private BigDecimal total;
 
     private EstadoReserva estado;
 }

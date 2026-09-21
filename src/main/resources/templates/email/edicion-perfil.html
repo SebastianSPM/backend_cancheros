@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación xd de edición de perfil | Cancheros</title>
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    background-color: #142e22;
+    font-family: Arial, Helvetica, sans-serif;
+">
+
+<table
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+        style="
+            width: 100%;
+            background-color: #142e22;
+            margin: 0;
+            padding: 40px 20px;
+        "
+>
+    <tr>
+        <td align="center">
+
+            <table
+                    width="600"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                    style="
+                        width: 100%;
+                        max-width: 600px;
+                        background-color: #263238;
+                        border-radius: 8px;
+                        overflow: hidden;
+                    "
+            >
+
+                <!-- ENCABEZADO -->
+                <tr>
+                    <td
+                            style="
+                                padding: 28px 32px;
+                                background-color: #1f4531;
+                                text-align: left;
+                            "
+                    >
+
+                        <div style="
+                                font-size: 13px;
+                                font-weight: bold;
+                                letter-spacing: 2px;
+                                text-transform: uppercase;
+                                color: #f2f0e9;
+                            ">
+                                <span style="
+                                    color: #ffc857;
+                                    font-size: 18px;
+                                ">
+                                    ●
+                                </span>
+
+                            CANCHEROS
+                        </div>
+
+                    </td>
+                </tr>
+
+                <!-- CONTENIDO -->
+                <tr>
+                    <td
+                            style="
+                                padding: 40px 32px;
+                                color: #f2f0e9;
+                            "
+                    >
+
+                        <div style="
+                                margin-bottom: 10px;
+                                color: #ffc857;
+                                font-size: 12px;
+                                font-weight: bold;
+                                letter-spacing: 2px;
+                                text-transform: uppercase;
+                            ">
+                            Seguridad
+                        </div>
+
+                        <h1 style="
+                                margin: 0 0 12px;
+                                color: #f2f0e9;
+                                font-size: 30px;
+                                line-height: 1.2;
+                            ">
+                            Validar edición de perfil
+                        </h1>
+
+                        <p style="
+                                margin: 0 0 18px;
+                                color: #a8b3ae;
+                                font-size: 15px;
+                                line-height: 1.6;
+                            ">
+                            Hemos recibido una solicitud para modificar
+                            los datos de tu perfil de Cancheros.
+                        </p>
+
+                        <p style="
+                                margin: 0 0 28px;
+                                color: #a8b3ae;
+                                font-size: 15px;
+                                line-height: 1.6;
+                            ">
+                            Para continuar, debes confirmar que tienes
+                            acceso al correo electrónico asociado a tu cuenta.
+                        </p>
+
+                        <!-- BOTÓN -->
+                        <table
+                                width="100%"
+                                cellpadding="0"
+                                cellspacing="0"
+                                border="0"
+                        >
+                            <tr>
+                                <td align="center">
+
+                                    <a
+                                            th:href="${enlace}"
+                                            style="
+                                                display: inline-block;
+                                                padding: 14px 24px;
+                                                background-color: #ffc857;
+                                                color: #1b1204;
+                                                text-decoration: none;
+                                                border-radius: 4px;
+                                                font-size: 14px;
+                                                font-weight: bold;
+                                                letter-spacing: 0.5px;
+                                                text-transform: uppercase;
+                                            "
+                                    >
+                                        Validar edición de perfil
+                                    </a>
+
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- EXPIRACIÓN -->
+                        <p style="
+                                margin: 28px 0 0;
+                                color: #7c8985;
+                                font-size: 13px;
+                                line-height: 1.5;
+                                text-align: center;
+                            ">
+                            Este enlace expirará en
+                            <strong style="color: #cfd4c9;">
+                                15 minutos
+                            </strong>.
+                        </p>
+
+                        <!-- ADVERTENCIA -->
+                        <div style="
+                                margin-top: 28px;
+                                padding: 16px;
+                                background-color: #2f3d44;
+                                border-left: 3px solid #ffc857;
+                                border-radius: 4px;
+                            ">
+
+                            <p style="
+                                    margin: 0;
+                                    color: #a8b3ae;
+                                    font-size: 13px;
+                                    line-height: 1.5;
+                                ">
+                                Si tú no solicitaste esta modificación,
+                                puedes ignorar este correo.
+                            </p>
+
+                        </div>
+
+                    </td>
+                </tr>
+
+                <!-- PIE -->
+                <tr>
+                    <td
+                            style="
+                                padding: 22px 32px;
+                                border-top: 1px solid #3c4a51;
+                                background-color: #263238;
+                            "
+                    >
+
+                        <p style="
+                                margin: 0;
+                                color: #7c8985;
+                                font-size: 12px;
+                                line-height: 1.5;
+                                text-align: center;
+                            ">
+                            Este es un mensaje automático de Cancheros.
+                            <br>
+                            Por favor, no respondas a este correo.
+                        </p>
+
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
